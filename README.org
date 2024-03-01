@@ -1,0 +1,30 @@
+* Usage
+
+=[M-x org-bookmarks]=
+
+* The bookmarks Org mode file format
+
+A bookmark entry in the bookmarks file requires three elements:
+
+- headline is the bookmark title
+- a tag "bookmark" to mark the headline as a bookmark
+- the bookmark entry need to have a property "URL" with URL value
+
+For example:
+
+#+begin_src org
+,* Emacs
+
+,** /r/emacs                                                   :Reddit:bookmark:
+:PROPERTIES:
+:URL:      https://www.reddit.com/r/emacs
+:DATE:     [2024-02-26 Mon 19:31]
+:END:
+
+,** /r/planetemacs                                             :Reddit:bookmark:
+:PROPERTIES:
+:URL:      https://www.reddit.com/r/planetemacs/
+:DATE:     [2024-02-26 Mon 19:37]
+:END:
+
+#+end_src

@@ -1,0 +1,14 @@
+* Emacs
+
+** /r/emacs                                                   :Reddit:bookmark:
+:PROPERTIES:
+:URL:      https://www.reddit.com/r/emacs
+:DATE:     [2024-02-26 Mon 19:31]
+:END:
+
+** /r/planetemacs                                             :Reddit:bookmark:
+:PROPERTIES:
+:URL:      https://www.reddit.com/r/planetemacs/
+:DATE:     [2024-02-26 Mon 19:37]
+:END:
+
