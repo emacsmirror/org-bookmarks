@@ -92,6 +92,23 @@ You can set ORG-FILE with option `org-bookmarks-file'."
 ;; (org-bookmarks "bookmarks.org")
 ;; (org-bookmarks (expand-file-name org-bookmarks-file))
 
+;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
+(unless (assoc "b" org-capture-templates)
+  (add-to-list
+   'org-capture-templates
+   `("b" ,(format "%s\tAdd a new bookmark to %s"
+                  (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue)
+                  org-bookmarks-file)
+     entry (file ,(expand-file-name org-bookmarks-file))
+     "* %^{bookmark title}
+:PROPERTIES:
+:URL:  %^C
+:DATE: %t
+:END:"
+     :empty-lines 1
+     :jump-to-captured t)
+   :append))
+
 
 
 (provide 'org-bookmarks)
