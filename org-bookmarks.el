@@ -3,7 +3,7 @@
 
 ;; Copyright (C) 2020-2021 Free Software Foundation, Inc.
 
-;; Authors: stardiviner <numbchild@gmail.com>
+;; Authors: stardiviner <numbchild@gmail.com>, Nicholas Vollmer <progfolio@protonmail.com>
 ;; Package-Requires: ((emacs "26.1") (ivy "0.14.2"))
 ;; Version: 0.1
 ;; Keywords: outline matching hypermedia org
@@ -30,16 +30,21 @@
 ;;; Code:
 
 (require 'org-element)
-(require 'seq)
-(require 'ivy)
 
 (defgroup org-bookmarks nil
   "The defcustom group of `org-bookmarks'."
   :prefix "org-boomarks-"
   :group 'org)
 
-(defcustom org-bookmarks-file "~/Org/Bookmarks/Bookmarks.org"
-  "The Org bookmarks file."
+;; The :group keyword is not necessary if a group has been defined in the same file.
+;; It will default to the last declared.
+
+;; It would be better to default to the demo file in the repository.
+;; That avoids creating a directory on the user's system that may not exist yet.
+;; It also allows the user to try the command out without customizing anything first.
+(defcustom org-bookmarks-file
+  (expand-file-name "bookmarks.org" (file-name-directory (or load-file-name (buffer-file-name))))
+  "The Org bookmarks filename."
   :type 'string
   :safe #'stringp
   :group 'org-bookmarks)
@@ -47,46 +52,74 @@
 (defcustom org-bookmarks-tag "bookmark"
   "The tag to mark Org headline as bookmark entry."
   :type 'string
-  :safe #'stringp)
+  :safe #'stringp
+  :group 'org-bookmarks)
 
-(defun org-bookmarks (&optional org-file)
-  "Search bookmarks in Org mode bookmarks file ORG-FILE.
+;; It's possible the user may want to change which function is used to browse the URL.
+(defcustom org-bookmarks-browse-function #'browse-url
+  "Function called by `org-bookmarks' with selected URL as its sole argument."
+  :type 'function)
 
-This command is entry of package \"org-bookmarks.el\".
-You can set ORG-FILE with option `org-bookmarks-file'."
+;; Decomposing the logic of the main funciton into smaller functions makes the program
+;; easier to reason about and more flexible.
+
+;; We're mapping over headlines via the org-element API, so we can assume that's
+;; what type of element we'll be operating on here.
+(defun org-bookmark--candidate (headline)
+  "Return candidate string from Org HEADLINE."
+  ;; We can use when-let to succinctly assign variables and return early for
+  ;; non-matching headlines
+  (when-let ((tags (org-element-property :tags headline))
+             ((member org-bookmarks-tag tags))
+             (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
+             (info (concat (unless (= (length tags) 1)
+                             (format "[%s]" (string-join (delete org-bookmarks-tag tags) ":")))
+                           "\n" (propertize url 'face 'link) "\n")))
+    ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
+    (propertize (org-element-property :raw-value headline) 'url url 'annotation info)))
+
+(defun org-bookmark--candidates (file)
+  "Return a list of candidates from FILE."
+  ;; It's better to use a temp buffer than touch the user's buffer.
+  ;; It also cleans up after itself.
+  (with-temp-buffer
+    (insert-file-contents file)
+    (delay-mode-hooks ;; This will prevent user hooks from running during parsing.
+      (org-mode)
+      (goto-char (point-min))
+      (let ((candidates nil))
+        (org-element-map (org-element-parse-buffer 'headline) 'headline
+          (lambda (headline)
+            (when-let ((candidate (org-bookmark--candidate headline)))
+              (push candidate candidates))))
+        (nreverse candidates)))))
+
+;; The annotation function can look up the properties on each candidate.
+(defun org-bookmarks--annotator (candidate)
+  "Annotate bookmark completion CANDIDATE."
+  (concat (propertize " " 'display '(space :align-to center))
+          (get-text-property 0 'annotation candidate)))
+
+(defun org-bookmarks (&optional file)
+  "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive)
-  (let ((bookmarks-file (or org-file org-bookmarks-file)))
-    (with-current-buffer (or (get-buffer (file-name-nondirectory bookmarks-file))
-                             (find-file-noselect bookmarks-file))
-      (let ((bookmark-headlines))
-        (org-element-map (org-element-parse-buffer) 'headline ; FIXME: parsed headlines not correct.
-          (lambda (node)
-            (let ((headline node))
-              (when (member org-bookmarks-tag (org-element-property :tags headline))
-                (let* ((element (or headline (org-element-context)))
-                       (headline-text (org-element-property :raw-value element))
-                       (tags (delete "bookmark" (org-element-property :tags element)))
-                       (properties (org-entry-properties element 'standard))
-                       (property-url (cdr (assoc "URL" properties))))
-                  (push (when (and headline-text property-url) ; make sure those variable not nil.
-                          (concat headline-text (when tags (concat "   [" (string-join tags ":") "] ")) "\n"
-                                  (propertize property-url 'face 'link) "\n"))
-                        bookmark-headlines))))))
-        (if bookmark-headlines
-            (browse-url
-             (substring-no-properties
-              (if (and (featurep 'ivy) ivy-mode)
-                  (seq-elt (split-string (ivy-read "org-bookmarks: " bookmark-headlines) "\n") 1)
-                (let ((completion-extra-properties
-                       (list :category 'bookmark
-                             :annotation-function (lambda (bookmark-headline)
-                                                    ;; FIXME: how to display headline & url as two-line candidate format.
-                                                    (let ((url (cdr (split-string bookmark-headline "\n"))))
-                                                      (concat (propertize " " 'display '(space :align-to center))
-		                                                      (get-text-property 0 :annotation candidate)
-                                                              (format " (%s)" url)))))))
-                  (seq-elt (split-string (completing-read "org-bookmarks: " bookmark-headlines) "\n") 1)))))
-          (message "[org-bookmarks] WARNING: Have not found any bookmarks!"))))))
+  (if-let ((file (or file org-bookmarks-file))
+           ;; Ensure file exists first.
+           ((file-exists-p file)))
+      (if-let ((candidates (org-bookmark--candidates file))
+               ;; Necessary for propertized text in minibuffer.
+               (minibuffer-allow-text-properties t)
+               (completion-extra-properties
+                ;; Using the "bookmark" category caused the annotations to not show.
+                ;; I think that may have be do to vertico-mode, but
+                ;; it's probably worth using a unique category so users can exercise finer-grained  customization.
+                (list :category 'org-bookmark
+                      :annotation-function #'org-bookmarks--annotator))
+               (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
+               (url (get-text-property 0 'url choice)))
+          (funcall org-bookmarks-browse-function url)
+        (user-error "No bookmarks found in %S" file))
+    (user-error "File does not exist: %S" file)))
 
 ;;; TEST:
 ;; (org-bookmarks "bookmarks.org")
