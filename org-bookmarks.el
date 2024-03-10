@@ -77,12 +77,18 @@
              (tags-searchable (remove org-bookmarks-tag tags))
              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
              (info (concat "\n" (propertize url 'face 'link) "\n"))
-             (headline-title (org-element-property :raw-value headline)))
+             (headline-title (org-element-property :raw-value headline))
+             ;; TODO: The length counting method not correct on Chinese.
+             (middle-line-length (when-let* ((length (- (- org-tags-column)
+                                                        (length tags-searchable)
+                                                        (length headline-title) 2))
+                                             ((wholenump length)))
+                                   length)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (propertize
      (concat headline-title
              (format " %s [%s]"
-                     (make-string (- (- org-tags-column) (length tags-searchable) (length headline-title) 2) ?―)
+                     (make-string middle-line-length ?―)
                      (if (= (length tags-searchable) 1)
                          (car tags-searchable)
                        (string-join tags-searchable ":"))))
