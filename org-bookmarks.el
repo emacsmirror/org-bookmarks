@@ -29,6 +29,7 @@
 
 ;;; Code:
 
+(require 'org) ; for `org-tags-column'
 (require 'org-element)
 (require 'org-capture)
 (require 'nerd-icons)
@@ -73,12 +74,19 @@
   ;; non-matching headlines
   (when-let ((tags (org-element-property :tags headline))
              ((member org-bookmarks-tag tags))
+             (tags-searchable (remove org-bookmarks-tag tags))
              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
-             (info (concat (unless (= (length tags) 1)
-                             (format "[%s]" (string-join (delete org-bookmarks-tag tags) ":")))
-                           "\n" (propertize url 'face 'link) "\n")))
+             (info (concat "\n" (propertize url 'face 'link) "\n"))
+             (headline-title (org-element-property :raw-value headline)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
-    (propertize (org-element-property :raw-value headline) 'url url 'annotation info)))
+    (propertize
+     (concat headline-title
+             (format " %s [%s]"
+                     (make-string (- (- org-tags-column) (length tags-searchable) (length headline-title) 2) ?―)
+                     (if (= (length tags-searchable) 1)
+                         (car tags-searchable)
+                       (string-join tags-searchable ":"))))
+     'url url 'annotation info)))
 
 (defun org-bookmark--candidates (file)
   "Return a list of candidates from FILE."
