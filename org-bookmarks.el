@@ -68,7 +68,7 @@
 
 ;; We're mapping over headlines via the org-element API, so we can assume that's
 ;; what type of element we'll be operating on here.
-(defun org-bookmark--candidate (headline)
+(defun org-bookmarks--candidate (headline)
   "Return candidate string from Org HEADLINE."
   ;; We can use when-let to succinctly assign variables and return early for
   ;; non-matching headlines
@@ -88,7 +88,7 @@
                        (string-join tags-searchable ":"))))
      'url url 'annotation info)))
 
-(defun org-bookmark--candidates (file)
+(defun org-bookmarks--candidates (file)
   "Return a list of candidates from FILE."
   ;; It's better to use a temp buffer than touch the user's buffer.
   ;; It also cleans up after itself.
@@ -100,7 +100,7 @@
       (let ((candidates nil))
         (org-element-map (org-element-parse-buffer 'headline) 'headline
           (lambda (headline)
-            (when-let ((candidate (org-bookmark--candidate headline)))
+            (when-let ((candidate (org-bookmarks--candidate headline)))
               (push candidate candidates))))
         (nreverse candidates)))))
 
@@ -116,7 +116,7 @@
   (if-let ((file (or file org-bookmarks-file))
            ;; Ensure file exists first.
            ((file-exists-p file)))
-      (if-let ((candidates (org-bookmark--candidates file))
+      (if-let ((candidates (org-bookmarks--candidates file))
                ;; Necessary for propertized text in minibuffer.
                (minibuffer-allow-text-properties t)
                (completion-extra-properties
