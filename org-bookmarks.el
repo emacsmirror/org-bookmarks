@@ -4,7 +4,7 @@
 ;; Copyright (C) 2020-2021 Free Software Foundation, Inc.
 
 ;; Authors: stardiviner <numbchild@gmail.com>, Nicholas Vollmer <progfolio@protonmail.com>
-;; Package-Requires: ((emacs "26.1") (nerd-icons "0.1.0"))
+;; Package-Requires: ((emacs "26.1"))
 ;; Version: 0.1
 ;; Keywords: outline matching hypermedia org
 ;; URL: https://repo.or.cz/org-bookmarks.git
@@ -31,8 +31,6 @@
 
 (require 'org) ; for `org-tags-column'
 (require 'org-element)
-(require 'org-capture)
-(require 'nerd-icons)
 
 (defgroup org-bookmarks nil
   "The defcustom group of `org-bookmarks'."
@@ -61,7 +59,14 @@
 ;; It's possible the user may want to change which function is used to browse the URL.
 (defcustom org-bookmarks-browse-function #'browse-url
   "Function called by `org-bookmarks' with selected URL as its sole argument."
-  :type 'function)
+  :type 'function
+  :group 'org-bookmarks)
+
+(defcustom org-bookmarks-add-org-capture-template nil
+  "Add org-capture template for org-bookmarks."
+  :type 'boolean
+  :safe #'booleanp
+  :group 'org-bookmarks)
 
 ;; Decomposing the logic of the main funciton into smaller functions makes the program
 ;; easier to reason about and more flexible.
@@ -142,22 +147,24 @@
 ;; (org-bookmarks (expand-file-name org-bookmarks-file))
 
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
-(unless (assoc "b" org-capture-templates)
-  (add-to-list
-   'org-capture-templates
-   `("b" ,(format "%s\tAdd a new bookmark to %s"
-                  (when (featurep 'nerd-icons)
-                    (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
-                  org-bookmarks-file)
-     entry (file ,(expand-file-name org-bookmarks-file))
-     "* %^{bookmark title}
+(when org-bookmarks-add-org-capture-template
+  (require 'org-capture)
+  (unless (assoc "b" org-capture-templates)
+    (add-to-list
+     'org-capture-templates
+     `("b" ,(format "%s\tAdd a new bookmark to %s"
+                    (when (require 'nerd-icons nil t)
+                      (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
+                    org-bookmarks-file)
+       entry (file ,(expand-file-name org-bookmarks-file))
+       "* %^{bookmark title}
 :PROPERTIES:
 :URL:  %^C
 :DATE: %t
 :END:"
-     :empty-lines 1
-     :jump-to-captured t)
-   :append))
+       :empty-lines 1
+       :jump-to-captured t)
+     :append)))
 
 
 
