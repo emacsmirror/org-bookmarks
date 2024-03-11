@@ -37,9 +37,6 @@
   :prefix "org-boomarks-"
   :group 'org)
 
-;; The :group keyword is not necessary if a group has been defined in the same file.
-;; It will default to the last declared.
-
 ;; It would be better to default to the demo file in the repository.
 ;; That avoids creating a directory on the user's system that may not exist yet.
 ;; It also allows the user to try the command out without customizing anything first.
@@ -56,7 +53,6 @@
   :safe #'stringp
   :group 'org-bookmarks)
 
-;; It's possible the user may want to change which function is used to browse the URL.
 (defcustom org-bookmarks-browse-function #'browse-url
   "Function called by `org-bookmarks' with selected URL as its sole argument."
   :type 'function
@@ -68,15 +64,9 @@
   :safe #'booleanp
   :group 'org-bookmarks)
 
-;; Decomposing the logic of the main funciton into smaller functions makes the program
-;; easier to reason about and more flexible.
 
-;; We're mapping over headlines via the org-element API, so we can assume that's
-;; what type of element we'll be operating on here.
 (defun org-bookmarks--candidate (headline)
   "Return candidate string from Org HEADLINE."
-  ;; We can use when-let to succinctly assign variables and return early for
-  ;; non-matching headlines
   (when-let ((tags (org-element-property :tags headline))
              ( (member org-bookmarks-tag tags))
              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
@@ -105,7 +95,7 @@
   ;; It also cleans up after itself.
   (with-temp-buffer
     (insert-file-contents file)
-    (delay-mode-hooks ;; This will prevent user hooks from running during parsing.
+    (delay-mode-hooks ; This will prevent user hooks from running during parsing.
       (org-mode)
       (goto-char (point-min))
       (let ((candidates nil))
@@ -115,7 +105,6 @@
               (push candidate candidates))))
         (nreverse candidates)))))
 
-;; The annotation function can look up the properties on each candidate.
 (defun org-bookmarks--annotator (candidate)
   "Annotate bookmark completion CANDIDATE."
   (concat (propertize " " 'display '(space :align-to center))
@@ -125,10 +114,8 @@
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive)
   (if-let ((file (or file org-bookmarks-file))
-           ;; Ensure file exists first.
            ((file-exists-p file)))
       (if-let ((candidates (org-bookmarks--candidates file))
-               ;; Necessary for propertized text in minibuffer.
                (minibuffer-allow-text-properties t)
                (completion-extra-properties
                 ;; Using the "bookmark" category caused the annotations to not show.
