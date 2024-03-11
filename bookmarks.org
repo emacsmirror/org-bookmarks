@@ -1,5 +1,12 @@
 * Emacs
 
+** GNU Emacs homepage                                              :bookmark:
+:PROPERTIES:
+:URL:      https://www.gnu.org/software/emacs/
+:END:
+
+Only one tag "=bookmark=" for testing.
+
 ** /r/emacs                                                   :Reddit:bookmark:
 :PROPERTIES:
 :URL:      https://www.reddit.com/r/emacs

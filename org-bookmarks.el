@@ -78,26 +78,26 @@
   ;; We can use when-let to succinctly assign variables and return early for
   ;; non-matching headlines
   (when-let ((tags (org-element-property :tags headline))
-             ((member org-bookmarks-tag tags))
-             (tags-searchable (remove org-bookmarks-tag tags))
+             ( (member org-bookmarks-tag tags))
              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
              (info (concat "\n" (propertize url 'face 'link) "\n"))
-             (headline-title (org-element-property :raw-value headline))
-             ;; TODO: The length counting method not correct on Chinese.
-             (middle-line-length (when-let* ((length (- (- org-tags-column)
-                                                        (length tags-searchable)
-                                                        (length headline-title) 2))
-                                             ((wholenump length)))
-                                   length)))
+             (headline-title (org-element-property :raw-value headline)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
-    (propertize
-     (concat headline-title
-             (format " %s [%s]"
-                     (make-string middle-line-length ?―)
-                     (if (= (length tags-searchable) 1)
-                         (car tags-searchable)
-                       (string-join tags-searchable ":"))))
-     'url url 'annotation info)))
+    (let* ((tags-searchable (delete org-bookmarks-tag tags))
+           ;; TODO: The length counting method not correct on Chinese.
+           (middle-line-length (when-let* ((length (- (- org-tags-column)
+                                                      (length (string-join tags-searchable ":"))
+                                                      (length headline-title) 2))
+                                           ((wholenump length)))
+                                 length)))
+      (propertize
+       (concat headline-title
+               (format " %s [%s]"
+                       (make-string middle-line-length ?―)
+                       (if (= (length tags-searchable) 1)
+                           (car tags-searchable)
+                         (string-join tags-searchable ":"))))
+       'url url 'annotation info))))
 
 (defun org-bookmarks--candidates (file)
   "Return a list of candidates from FILE."
