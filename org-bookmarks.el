@@ -3,7 +3,7 @@
 
 ;; Copyright (C) 2020-2021 Free Software Foundation, Inc.
 
-;; Authors: stardiviner <numbchild@gmail.com>, Nicholas Vollmer <progfolio@protonmail.com>
+;; Authors: stardiviner <numbchild@gmail.com>
 ;; Package-Requires: ((emacs "26.1"))
 ;; Version: 0.1
 ;; Keywords: outline matching hypermedia org
