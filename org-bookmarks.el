@@ -4,7 +4,7 @@
 ;; Copyright (C) 2020-2021 Free Software Foundation, Inc.
 
 ;; Authors: stardiviner <numbchild@gmail.com>, Nicholas Vollmer <progfolio@protonmail.com>
-;; Package-Requires: ((emacs "26.1") (ivy "0.14.2") (nerd-icons "0.1.0"))
+;; Package-Requires: ((emacs "26.1") (nerd-icons "0.1.0"))
 ;; Version: 0.1
 ;; Keywords: outline matching hypermedia org
 ;; URL: https://repo.or.cz/org-bookmarks.git
