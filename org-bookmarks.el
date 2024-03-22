@@ -110,12 +110,20 @@
   (concat (propertize " " 'display '(space :align-to center))
           (get-text-property 0 'annotation candidate)))
 
+(defun org-bookmarks--return-candidates (&optional file)
+  "Return org-bookmarks candidates."
+  (let ((file (or file org-bookmarks-file)))
+    (org-bookmarks--candidates file)))
+
+(defvar org-bookmarks--candidates-cache (org-bookmarks--return-candidates)
+  "A cache variable of org-bookmarks--candidates.")
+
 (defun org-bookmarks (&optional file)
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive)
   (if-let ((file (or file org-bookmarks-file))
            ((file-exists-p file)))
-      (if-let ((candidates (org-bookmarks--candidates file))
+      (if-let ((candidates org-bookmarks--candidates-cache)
                (minibuffer-allow-text-properties t)
                (completion-extra-properties
                 ;; Using the "bookmark" category caused the annotations to not show.
