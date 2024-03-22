@@ -83,7 +83,7 @@
       (propertize
        (concat headline-title
                (format " %s [%s]"
-                       (make-string middle-line-length ?―)
+                       (make-string (or middle-line-length 0) ?―)
                        (if (= (length tags-searchable) 1)
                            (car tags-searchable)
                          (string-join tags-searchable ":"))))
