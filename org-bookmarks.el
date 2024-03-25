@@ -115,12 +115,14 @@
   (let ((file (or file org-bookmarks-file)))
     (org-bookmarks--candidates file)))
 
-(defvar org-bookmarks--candidates-cache (org-bookmarks--return-candidates)
+(defvar org-bookmarks--candidates-cache nil
   "A cache variable of org-bookmarks--candidates.")
 
 (defun org-bookmarks (&optional file)
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive)
+  (unless org-bookmarks--candidates-cache
+    (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
   (if-let ((file (or file org-bookmarks-file))
            ((file-exists-p file)))
       (if-let ((candidates org-bookmarks--candidates-cache)
