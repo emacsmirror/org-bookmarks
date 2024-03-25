@@ -116,8 +116,9 @@
 
 (defun org-bookmarks--return-candidates (&optional file)
   "Return org-bookmarks candidates."
-  (let ((file (or file org-bookmarks-file)))
-    (org-bookmarks--candidates file)))
+  (if-let ((file (or file org-bookmarks-file)))
+      (org-bookmarks--candidates file)
+    (user-error "File does not exist: %S" file)))
 
 (defvar org-bookmarks--candidates-cache nil
   "A cache variable of org-bookmarks--candidates.")
@@ -128,7 +129,7 @@
   (unless org-bookmarks--candidates-cache
     (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
   (if-let ((file (or file org-bookmarks-file))
-           ((file-exists-p file)))
+           (_ (file-exists-p file)))
       (if-let ((candidates org-bookmarks--candidates-cache)
                (minibuffer-allow-text-properties t)
                (completion-extra-properties
