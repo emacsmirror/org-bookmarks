@@ -32,6 +32,10 @@
 (require 'org) ; for `org-tags-column'
 (require 'org-element)
 
+(eval-when-compile (require 'org-capture))
+(eval-when-compile (require 'nerd-icons))
+(declare-function 'nerd-icons-mdicon "nerd-icons")
+
 (defgroup org-bookmarks nil
   "The defcustom group of `org-bookmarks'."
   :prefix "org-boomarks-"
@@ -145,12 +149,11 @@
 
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
 (when org-bookmarks-add-org-capture-template
-  (require 'org-capture)
   (unless (assoc "b" org-capture-templates)
     (add-to-list
      'org-capture-templates
      `("b" ,(format "%s\tAdd a new bookmark to %s"
-                    (when (require 'nerd-icons nil t)
+                    (when (featurep 'nerd-icons)
                       (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
                     org-bookmarks-file)
        entry (file ,(expand-file-name org-bookmarks-file))
