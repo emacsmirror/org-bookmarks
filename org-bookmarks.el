@@ -34,7 +34,7 @@
 
 (eval-when-compile (require 'org-capture))
 (eval-when-compile (require 'nerd-icons))
-(declare-function 'nerd-icons-mdicon "nerd-icons")
+(declare-function 'nerd-icons-mdicon "nerd-icons" (icon-name &rest args))
 
 (defgroup org-bookmarks nil
   "The defcustom group of `org-bookmarks'."
