@@ -63,7 +63,7 @@
   :group 'org-bookmarks)
 
 (defcustom org-bookmarks-add-org-capture-template nil
-  "Add org-capture template for org-bookmarks."
+  "Add `org-capture' template for org-bookmarks."
   :type 'boolean
   :safe #'booleanp
   :group 'org-bookmarks)
@@ -115,7 +115,7 @@
           (get-text-property 0 'annotation candidate)))
 
 (defun org-bookmarks--return-candidates (&optional file)
-  "Return org-bookmarks candidates."
+  "Return org-bookmarks candidates which parsed from FILE."
   (if-let ((file (or file org-bookmarks-file)))
       (org-bookmarks--candidates file)
     (user-error "File does not exist: %S" file)))
