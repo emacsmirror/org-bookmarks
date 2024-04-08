@@ -123,6 +123,7 @@
 (defvar org-bookmarks--candidates-cache nil
   "A cache variable of org-bookmarks--candidates.")
 
+;;;###autoload
 (defun org-bookmarks (&optional file)
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive)
@@ -149,6 +150,7 @@
 ;; (org-bookmarks (expand-file-name org-bookmarks-file))
 
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
+;;;###autoload
 (when org-bookmarks-add-org-capture-template
   (unless (assoc "b" org-capture-templates)
     (add-to-list
