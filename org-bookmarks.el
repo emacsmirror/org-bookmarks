@@ -128,8 +128,8 @@
   (interactive)
   (unless org-bookmarks--candidates-cache
     (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
-  (if-let ((file (or file org-bookmarks-file))
-           (_ (file-exists-p file)))
+  (if-let* ((file (or file org-bookmarks-file))
+            ((file-exists-p file)))
       (if-let ((candidates org-bookmarks--candidates-cache)
                (minibuffer-allow-text-properties t)
                (completion-extra-properties
@@ -154,7 +154,7 @@
     (add-to-list
      'org-capture-templates
      `("b" ,(format "%s\tAdd a new bookmark to %s"
-                    (when (featurep 'nerd-icons)
+                    (when (fboundp 'nerd-icons-mdicon)
                       (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
                     org-bookmarks-file)
        entry (file ,(expand-file-name org-bookmarks-file))
