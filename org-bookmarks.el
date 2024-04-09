@@ -131,16 +131,16 @@
     (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
   (if-let* ((file (or file org-bookmarks-file))
             ((file-exists-p file)))
-      (if-let ((candidates org-bookmarks--candidates-cache)
-               (minibuffer-allow-text-properties t)
-               (completion-extra-properties
-                ;; Using the "bookmark" category caused the annotations to not show.
-                ;; I think that may have be do to vertico-mode, but
-                ;; it's probably worth using a unique category so users can exercise finer-grained  customization.
-                (list :category 'org-bookmark
-                      :annotation-function #'org-bookmarks--annotator))
-               (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
-               (url (get-text-property 0 'url choice)))
+      (if-let* ((candidates org-bookmarks--candidates-cache)
+                (minibuffer-allow-text-properties t)
+                (completion-extra-properties
+                 ;; Using the "bookmark" category caused the annotations to not show.
+                 ;; I think that may have be do to vertico-mode, but
+                 ;; it's probably worth using a unique category so users can exercise finer-grained  customization.
+                 (list :category 'org-bookmark
+                       :annotation-function #'org-bookmarks--annotator))
+                (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
+                (url (get-text-property 0 'url choice)))
           (funcall org-bookmarks-browse-function url)
         (user-error "No bookmarks found in %S" file))
     (user-error "File does not exist: %S" file)))
