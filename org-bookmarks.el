@@ -63,7 +63,7 @@
   :group 'org-bookmarks)
 
 (defcustom org-bookmarks-add-org-capture-template nil
-  "Add `org-capture' template for org-bookmarks."
+  "Add `org-capture' template for `org-bookmarks'."
   :type 'boolean
   :safe #'booleanp
   :group 'org-bookmarks)
@@ -74,7 +74,7 @@
   (when-let ((tags (org-element-property :tags headline))
              ( (member org-bookmarks-tag tags))
              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
-             (info (concat "\n" (propertize url 'face 'link) "\n"))
+             (info (concat "\n" (propertize url 'face 'link) "\n")) ; multi-line candidate with "\n"
              (headline-title (org-element-property :raw-value headline)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
@@ -98,7 +98,7 @@
   ;; It's better to use a temp buffer than touch the user's buffer.
   ;; It also cleans up after itself.
   (with-temp-buffer
-    (insert-file-contents file)
+    (insert-file-contents file) ; don't need to actually open file.
     (delay-mode-hooks ; This will prevent user hooks from running during parsing.
       (org-mode)
       (goto-char (point-min))
@@ -115,7 +115,7 @@
           (get-text-property 0 'annotation candidate)))
 
 (defun org-bookmarks--return-candidates (&optional file)
-  "Return org-bookmarks candidates which parsed from FILE."
+  "Return `org-bookmarks' candidates which parsed from FILE."
   (if-let ((file (or file org-bookmarks-file)))
       (org-bookmarks--candidates file)
     (user-error "File does not exist: %S" file)))
