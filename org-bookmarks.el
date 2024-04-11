@@ -71,11 +71,11 @@
 
 (defun org-bookmarks--candidate (headline)
   "Return candidate string from Org HEADLINE."
-  (when-let ((tags (org-element-property :tags headline))
-             ( (member org-bookmarks-tag tags))
-             (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
-             (info (concat "\n" (propertize url 'face 'link) "\n")) ; multi-line candidate with "\n"
-             (headline-title (org-element-property :raw-value headline)))
+  (when-let* ((tags (org-element-property :tags headline))
+              ( (member org-bookmarks-tag tags))
+              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
+              (info (concat "\n" (propertize url 'face 'link) "\n")) ; multi-line candidate with "\n"
+              (headline-title (org-element-property :raw-value headline)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
            ;; TODO: The length counting method not correct on Chinese.
@@ -130,7 +130,7 @@
   (unless org-bookmarks--candidates-cache
     (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
   (if-let* ((file (or file org-bookmarks-file))
-            ((file-exists-p file)))
+            ( (file-exists-p file)))
       (if-let* ((candidates org-bookmarks--candidates-cache)
                 (minibuffer-allow-text-properties t)
                 (completion-extra-properties
