@@ -1,7 +1,7 @@
 ;;; org-bookmarks.el --- Manage bookmarks in Org mode -*- lexical-binding: t; -*-
 ;; -*- coding: utf-8 -*-
 
-;; Copyright (C) 2020-2021 Free Software Foundation, Inc.
+;; Copyright (C) 2024-2025 stardiviner <numbchild@gmail.com>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
 ;; Package-Requires: ((emacs "26.1"))
