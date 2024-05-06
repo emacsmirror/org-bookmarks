@@ -164,8 +164,7 @@
 ;; (org-bookmarks (expand-file-name org-bookmarks-file))
 
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
-;;;###autoload
-(when org-bookmarks-add-org-capture-template
+(when (bound-and-true-p org-bookmarks-add-org-capture-template)
   (unless (assoc "b" org-capture-templates)
     (add-to-list
      'org-capture-templates
