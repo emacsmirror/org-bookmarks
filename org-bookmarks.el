@@ -173,11 +173,11 @@
                       (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
                     org-bookmarks-file)
        entry (file ,(expand-file-name org-bookmarks-file))
-       "* %^{bookmark title}
+       ,(concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "
 :PROPERTIES:
 :URL:  %^C
 :DATE: %t
-:END:"
+:END:")
        :empty-lines 1
        :jump-to-captured t)
      :append)))
