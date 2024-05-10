@@ -171,7 +171,7 @@
      `("b" ,(format "%s\tAdd a new bookmark to %s"
                     (when (fboundp 'nerd-icons-mdicon)
                       (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
-                    org-bookmarks-file)
+                    (file-name-nondirectory org-bookmarks-file))
        entry (file ,(expand-file-name org-bookmarks-file))
        ,(concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "
 :PROPERTIES:
