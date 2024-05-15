@@ -187,7 +187,8 @@
 :DATE: %t
 :END:")
        :empty-lines 1
-       :jump-to-captured t)
+       :jump-to-captured t
+       :refile-targets ((,org-bookmarks-file :maxlevel 4)))
      :append)))
 
 
