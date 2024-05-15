@@ -173,6 +173,7 @@
 
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
 (when (bound-and-true-p org-bookmarks-add-org-capture-template)
+  (require 'org-capture)
   (unless (assoc "b" org-capture-templates)
     (add-to-list
      'org-capture-templates
