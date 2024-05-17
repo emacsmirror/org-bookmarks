@@ -113,6 +113,7 @@
                        (if (= (length tags-searchable) 1)
                            (car tags-searchable)
                          (string-join tags-searchable ":"))))
+       'title headline-title
        'url url 'annotation info))))
 
 (defun org-bookmarks--candidates (file)
@@ -170,6 +171,53 @@
 ;;; TEST:
 ;; (org-bookmarks "bookmarks.org")
 ;; (org-bookmarks (expand-file-name org-bookmarks-file))
+
+;;; Add link type `org-bookmark:'
+(defun org-bookmarks-link-open (bookmark-title _)
+  "Open the \"org-bookmark:\" link type with BOOKMARK-TITLE."
+  (if-let* ((file org-bookmarks-file)
+            (buffer (or (get-buffer (file-name-nondirectory file))
+                        (find-file-noselect file))))
+      (with-current-buffer buffer
+        (let ((marker (org-find-exact-headline-in-buffer bookmark-title buffer)))
+          (if (fboundp 'org-goto-marker-or-bmk)
+              (org-goto-marker-or-bmk marker)
+            (goto-char (marker-position marker))))
+        (display-buffer buffer '(display-buffer-below-selected))
+        (when (or (org-invisible-p) (org-invisible-p2))
+	      (org-fold-show-context)))))
+
+(defun org-bookmarks-link-store (&optional _interactive?)
+  "Store \"org-bookmark:\" type link."
+  (if (and (eq major-mode 'org-mode)
+           (string-equal (buffer-name) (file-name-nondirectory org-bookmarks-file)))
+      (let ((bookmark-title (substring-no-properties
+                             (org-get-heading :no-tags :no-todo :no-priority :no-comment))))
+        (org-link-store-props :type "org-bookmark"
+                              :link (format "org-bookmark:%s" bookmark-title)
+                              :description nil))
+    (user-error "[org-bookmarks] You're not in org-bookmarks file")))
+
+(defun org-bookmarks-link-complete ()
+  "Create a \"org-bookmark:\" type link using completion."
+  (if-let* ((candidates org-bookmarks--candidates-cache)
+            (minibuffer-allow-text-properties t)
+            (completion-extra-properties
+             (list :category 'org-bookmark
+                   :annotation-function #'org-bookmarks--annotator
+                   :exit-function (lambda (string status)
+                                    (message "[org-bookmarks] %s completion selected '%s'" status string))))
+            (bookmark (completing-read "[org-bookmarks] Complete bookmark: "
+                                       candidates nil 'require-match))
+            (bookmark-title (get-text-property 0 'title bookmark)))
+      (concat "org-bookmark:" bookmark-title)
+    (user-error "The specified bookmark not found")))
+
+(org-link-set-parameters "org-bookmark"
+                         :follow #'org-bookmarks-link-open
+                         :store #'org-bookmarks-link-store
+                         :complete #'org-bookmarks-link-complete)
+
 
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
 (when (bound-and-true-p org-bookmarks-add-org-capture-template)
