@@ -189,14 +189,13 @@
 
 (defun org-bookmarks-link-store (&optional _interactive?)
   "Store \"org-bookmark:\" type link."
-  (if (and (eq major-mode 'org-mode)
-           (string-equal (buffer-name) (file-name-nondirectory org-bookmarks-file)))
-      (let ((bookmark-title (substring-no-properties
-                             (org-get-heading :no-tags :no-todo :no-priority :no-comment))))
-        (org-link-store-props :type "org-bookmark"
-                              :link (format "org-bookmark:%s" bookmark-title)
-                              :description nil))
-    (user-error "[org-bookmarks] You're not in org-bookmarks file")))
+  (when (and (eq major-mode 'org-mode)
+             (string-equal (buffer-name) (file-name-nondirectory org-bookmarks-file)))
+    (let ((bookmark-title (substring-no-properties
+                           (org-get-heading :no-tags :no-todo :no-priority :no-comment))))
+      (org-link-store-props :type "org-bookmark"
+                            :link (format "org-bookmark:%s" bookmark-title)
+                            :description nil))))
 
 (defun org-bookmarks-link-complete ()
   "Create a \"org-bookmark:\" type link using completion."
