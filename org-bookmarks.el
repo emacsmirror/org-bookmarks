@@ -218,8 +218,9 @@
                          :complete #'org-bookmarks-link-complete)
 
 
-;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'
-(when (bound-and-true-p org-bookmarks-add-org-capture-template)
+;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'.
+(defun org-bookmarks-add-org-capture-template ()
+  "Add `org-capture' template for adding new bookmark to `org-bookmarks-file'."
   (require 'org-capture)
   (unless (assoc "b" org-capture-templates)
     (add-to-list
@@ -238,6 +239,9 @@
        :jump-to-captured t
        :refile-targets ((,org-bookmarks-file :maxlevel 4)))
      :append)))
+
+(when (bound-and-true-p org-bookmarks-add-org-capture-template)
+  (org-bookmarks-add-org-capture-template))
 
 
 
