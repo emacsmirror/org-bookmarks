@@ -33,7 +33,8 @@
 ;;   :ensure t
 ;;   :custom ((org-bookmarks-file "~/Org/Bookmarks/Bookmarks.org")
 ;;            (org-bookmarks-add-org-capture-template t))
-;;   :commands (org-bookmarks))
+;;   :commands (org-bookmarks)
+;;   :init (org-bookmarks-add-org-capture-template))
 
 ;; 1. Record bookmark information into Org mode file.
 ;;
@@ -85,7 +86,10 @@
   :group 'org-bookmarks)
 
 (defcustom org-bookmarks-add-org-capture-template nil
-  "Add `org-capture' template for `org-bookmarks'."
+  "Add `org-capture' template for `org-bookmarks'.
+WARNING: If you have org-capture template bind to key \"b\" already,
+when this option is t, it will override your org-capture template.
+Or you can add org-capture template by yourself."
   :type 'boolean
   :safe #'booleanp
   :group 'org-bookmarks)
@@ -217,31 +221,32 @@
                          :store #'org-bookmarks-link-store
                          :complete #'org-bookmarks-link-complete)
 
-
+;;;###autoload
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'.
 (defun org-bookmarks-add-org-capture-template ()
   "Add `org-capture' template for adding new bookmark to `org-bookmarks-file'."
   (require 'org-capture)
-  (unless (assoc "b" org-capture-templates)
-    (add-to-list
-     'org-capture-templates
-     `("b" ,(format "%s\tAdd a new bookmark to %s"
-                    (when (fboundp 'nerd-icons-mdicon)
-                      (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
-                    (file-name-nondirectory org-bookmarks-file))
-       entry (file ,(expand-file-name org-bookmarks-file))
-       ,(concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "
+  ;; Delete existing key "b" binding in `org-capture-templates'.
+  (if (and (assoc "b" org-capture-templates)
+           (bound-and-true-p org-bookmarks-add-org-capture-template))
+      (setq org-capture-templates
+            (delete (assoc "b" org-capture-templates) org-capture-templates)))
+  (add-to-list
+   'org-capture-templates
+   `("b" ,(format "%s\tAdd a new bookmark to %s"
+                  (when (fboundp 'nerd-icons-mdicon)
+                    (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
+                  (file-name-nondirectory org-bookmarks-file))
+     entry (file ,(expand-file-name org-bookmarks-file))
+     ,(concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "
 :PROPERTIES:
 :URL:  %^C
 :DATE: %t
 :END:")
-       :empty-lines 1
-       :jump-to-captured t
-       :refile-targets ((,org-bookmarks-file :maxlevel 4)))
-     :append)))
-
-(when (bound-and-true-p org-bookmarks-add-org-capture-template)
-  (org-bookmarks-add-org-capture-template))
+     :empty-lines 1
+     :jump-to-captured t
+     :refile-targets ((,org-bookmarks-file :maxlevel 4)))
+   :append))
 
 
 
