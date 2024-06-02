@@ -245,7 +245,7 @@ Or you can add org-capture template by yourself."
 :END:")
      :empty-lines 1
      :jump-to-captured t
-     :refile-targets ((,org-bookmarks-file :maxlevel 4)))
+     :refile-targets ((,org-bookmarks-file :maxlevel 3)))
    :append))
 
 
