@@ -162,8 +162,9 @@ Or you can add org-capture template by yourself."
                 (minibuffer-allow-text-properties t)
                 (completion-extra-properties
                  ;; Using the "bookmark" category caused the annotations to not show.
-                 ;; I think that may have be do to vertico-mode, but
-                 ;; it's probably worth using a unique category so users can exercise finer-grained  customization.
+                 ;; I think that may have be do to vertico-mode, but it's
+                 ;; probably worth using a unique category so users can exercise
+                 ;; finer-grained customization.
                  (list :category 'org-bookmark
                        :annotation-function #'org-bookmarks--annotator))
                 (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
