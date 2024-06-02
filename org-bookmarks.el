@@ -5,7 +5,7 @@
 
 ;; Authors: stardiviner <numbchild@gmail.com>
 ;; Package-Requires: ((emacs "26.1"))
-;; Version: 1.1
+;; Version: 1.2
 ;; Keywords: outline matching hypermedia org
 ;; URL: https://repo.or.cz/org-bookmarks.git
 
