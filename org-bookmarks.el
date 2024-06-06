@@ -44,6 +44,7 @@
 ;;    * bookmark title                                         :bookmark:tag1:tag2:
 ;;    :PROPERTIES:
 ;;    :URL:      https://www.example.com
+;;    :DESCRIPTION: example url
 ;;    :END:
 ;;    
 ;;    #+end_src
@@ -100,7 +101,12 @@ Or you can add org-capture template by yourself."
   (when-let* ((tags (org-element-property :tags headline))
               ( (member org-bookmarks-tag tags))
               (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
-              (info (concat "\n" (propertize url 'face 'link) "\n")) ; multi-line candidate with "\n"
+              (description (string-fill
+                            (or (alist-get "DESCRIPTION" (org-entry-properties headline 'standard) nil nil #'equal) "")
+                            fill-column))
+              (info (concat "\n" (propertize url 'face 'link) ; multi-line candidate with "\n"
+                            "\n" (propertize description 'face 'font-lock-comment-face)
+                            "\n"))
               (headline-title (org-element-property :raw-value headline)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
