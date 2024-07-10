@@ -161,6 +161,15 @@ Or you can add org-capture template by yourself."
   (interactive)
   (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
 
+;;; Auto update org-bookmarks database cache in Emacs idle timer.
+(defcustom org-bookmarks-db-update-idle-interval (* 60 10)
+  "The idle interval seconds for update `org-bookmarks' database cache."
+  :type 'number
+  :safe #'numberp
+  :group 'org-bookmarks)
+
+(run-with-idle-timer org-bookmarks-db-update-idle-interval t 'org-bookmarks-db-update-cache)
+
 ;;;###autoload
 (defun org-bookmarks (&optional file)
   "Open bookmark read from FILE or `org-bookmarks-file'."
