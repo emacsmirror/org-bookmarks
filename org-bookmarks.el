@@ -4,7 +4,7 @@
 ;; Copyright (C) 2024-2025 stardiviner <numbchild@gmail.com>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "29.1"))
 ;; Version: 1.2
 ;; Keywords: outline matching hypermedia org
 ;; URL: https://repo.or.cz/org-bookmarks.git
