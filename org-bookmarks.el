@@ -154,14 +154,19 @@ Or you can add org-capture template by yourself."
     (user-error "File does not exist: %S" file)))
 
 (defvar org-bookmarks--candidates-cache nil
-  "A cache variable of org-bookmarks--candidates.")
+  "A cache variable of `org-bookmarks--candidates'.")
+
+(defun org-bookmarks-db-update-cache ()
+  "Update the `org-bookmarks' database cache."
+  (interactive)
+  (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
 
 ;;;###autoload
 (defun org-bookmarks (&optional file)
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive)
   (unless org-bookmarks--candidates-cache
-    (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
+    (org-bookmarks-db-update-cache))
   (if-let* ((file (or file org-bookmarks-file))
             ( (file-exists-p file)))
       (if-let* ((candidates org-bookmarks--candidates-cache)
