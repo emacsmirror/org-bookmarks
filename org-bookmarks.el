@@ -88,7 +88,7 @@
 
 (defcustom org-bookmarks-add-org-capture-template nil
   "Add `org-capture' template for `org-bookmarks'.
-WARNING: If you have org-capture template bind to key \"b\" already,
+WARNING: If you have `org-capture' template bind to key \"b\" already,
 when this option is t, it will override your org-capture template.
 Or you can add org-capture template by yourself."
   :type 'boolean
