@@ -96,6 +96,29 @@ Or you can add org-capture template by yourself."
   :group 'org-bookmarks)
 
 
+(defun org-bookmarks--entry-screenshot (headline)
+  "Return the bookmark HEADLINE object's webpage screenshot inline image."
+  ;; limit in current headline entry.
+  (let ((entry-begin (org-element-begin headline))
+        (entry-end (org-element-end headline)))
+    ;; skip over to property end
+    (goto-char entry-begin)
+    (search-forward-regexp org-property-end-re nil t)
+    (when (re-search-forward org-link-any-re entry-end t)
+      ;; back to link beginning
+      (goto-char (match-beginning 0))
+      (let* ((link-element (org-element-link-parser))
+             (link-type (org-element-property :type link-element))
+             (link-path (org-element-property :path link-element)))
+        (when (buffer-narrowed-p) (widen))
+        (when (and link-path
+                   (string-equal link-type "file")
+                   (member (intern (file-name-extension link-path)) image-types))
+          (propertize " "
+                      'display (create-image link-path nil nil :max-height (* (default-font-height) 20))))))))
+
+;;; TEST: (org-bookmarks--entry-screenshot (org-element-context))
+
 (defun org-bookmarks--candidate (headline)
   "Return candidate string from Org HEADLINE."
   (when-let* ((tags (org-element-property :tags headline))
@@ -104,9 +127,12 @@ Or you can add org-capture template by yourself."
               (description (string-fill
                             (or (alist-get "DESCRIPTION" (org-entry-properties headline 'standard) nil nil #'equal) "")
                             fill-column))
-              (info (concat "\n" (propertize url 'face 'link) ; multi-line candidate with "\n"
-                            "\n" (propertize description 'face 'font-lock-comment-face)
-                            "\n"))
+              ;; bookmark extra info as bookmark completion candidate annotation.
+              (info (concat "\n" ; candidate display extra info in multi-line with "\n"
+                            (propertize url 'face 'link) "\n" ; property :URL:
+                            (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
+                            ;; The screenshot inline image in bookmark entry body.
+                            (org-bookmarks--entry-screenshot headline) "\n"))
               (headline-title (org-element-property :raw-value headline)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
