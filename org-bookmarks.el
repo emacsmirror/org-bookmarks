@@ -142,7 +142,7 @@ Or you can add org-capture template by yourself."
               (push candidate candidates))))
         (nreverse candidates)))))
 
-(defun org-bookmarks--annotator (candidate)
+(defun org-bookmarks--completion-annotator (candidate)
   "Annotate bookmark completion CANDIDATE."
   (concat (propertize " " 'display '(space :align-to center))
           (get-text-property 0 'annotation candidate)))
@@ -190,7 +190,7 @@ Or you can add org-capture template by yourself."
                  ;; probably worth using a unique category so users can exercise
                  ;; finer-grained customization.
                  (list :category 'org-bookmark
-                       :annotation-function #'org-bookmarks--annotator
+                       :annotation-function #'org-bookmarks--completion-annotator
                        :exit-function #'org-bookmarks--completion-action))
                 (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
                 (url (get-text-property 0 'url choice)))
@@ -233,7 +233,7 @@ Or you can add org-capture template by yourself."
             (minibuffer-allow-text-properties t)
             (completion-extra-properties
              (list :category 'org-bookmark
-                   :annotation-function #'org-bookmarks--annotator
+                   :annotation-function #'org-bookmarks--completion-annotator
                    :exit-function (lambda (string status)
                                     (message "[org-bookmarks] %s completion selected '%s'" status string))))
             (bookmark (completing-read "[org-bookmarks] Complete bookmark: "
