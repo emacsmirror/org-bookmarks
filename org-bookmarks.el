@@ -147,6 +147,10 @@ Or you can add org-capture template by yourself."
   (concat (propertize " " 'display '(space :align-to center))
           (get-text-property 0 'annotation candidate)))
 
+(defun org-bookmarks--completion-action (candidate status)
+  "The action function to be executed on selected completion CANDIDATE in STATUS."
+  (message "[org-bookmarks] completion `%s' is selected with status %s" candidate status))
+
 (defun org-bookmarks--return-candidates (&optional file)
   "Return `org-bookmarks' candidates which parsed from FILE."
   (if-let ((file (or file org-bookmarks-file)))
@@ -186,7 +190,8 @@ Or you can add org-capture template by yourself."
                  ;; probably worth using a unique category so users can exercise
                  ;; finer-grained customization.
                  (list :category 'org-bookmark
-                       :annotation-function #'org-bookmarks--annotator))
+                       :annotation-function #'org-bookmarks--annotator
+                       :exit-function #'org-bookmarks--completion-action))
                 (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
                 (url (get-text-property 0 'url choice)))
           (funcall org-bookmarks-browse-function url)
