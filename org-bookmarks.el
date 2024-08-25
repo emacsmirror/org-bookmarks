@@ -81,6 +81,12 @@
   :safe #'stringp
   :group 'org-bookmarks)
 
+(defcustom org-bookmarks-tag-exclude-list `(,org-archive-tag "deprecated")
+  "The list of Org tags to exclude in searching bookmarks list."
+  :type 'list
+  :safe #'listp
+  :group 'org-bookmarks)
+
 (defcustom org-bookmarks-browse-function #'browse-url
   "Function called by `org-bookmarks' with selected URL as its sole argument."
   :type 'function
@@ -122,7 +128,8 @@ Or you can add org-capture template by yourself."
 (defun org-bookmarks--candidate (headline)
   "Return candidate string from Org HEADLINE."
   (when-let* ((tags (org-element-property :tags headline))
-              ( (member org-bookmarks-tag tags))
+              ( (and (member org-bookmarks-tag tags)
+                     (not (seq-intersection tags org-bookmarks-tag-exclude-list))))
               (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
               (description (string-fill
                             (or (alist-get "DESCRIPTION" (org-entry-properties headline 'standard) nil nil #'equal) "")
