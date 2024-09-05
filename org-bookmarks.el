@@ -223,6 +223,7 @@ Or you can add org-capture template by yourself."
                  ;; finer-grained customization.
                  (list :category 'org-bookmark
                        :annotation-function #'org-bookmarks--completion-annotator
+                       :display-sort-function #'minibuffer-sort-by-history ; reference `vertico-sort-function'
                        :exit-function #'org-bookmarks--completion-action))
                 (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
                 (url (get-text-property 0 'url choice)))
