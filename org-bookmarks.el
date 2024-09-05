@@ -4,7 +4,7 @@
 ;; Copyright (C) 2024-2025 stardiviner <numbchild@gmail.com>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "29.1") (nerd-icons "0.1.0"))
 ;; Version: 1.2
 ;; Keywords: outline matching hypermedia org
 ;; URL: https://repo.or.cz/org-bookmarks.git
@@ -55,6 +55,7 @@
 
 (require 'org) ; for `org-tags-column'
 (require 'org-element)
+(require 'nerd-icons)
 
 (eval-when-compile (require 'org-capture))
 (eval-when-compile (require 'nerd-icons nil t))
@@ -148,16 +149,14 @@ Or you can add org-capture template by yourself."
                                                       (length (string-join tags-searchable ":"))
                                                       (length headline-title) 2))
                                            ((wholenump length)))
-                                 length)))
-      (propertize
-       (concat headline-title
-               (format " %s [%s]"
-                       (make-string (or middle-line-length 0) ?―)
-                       (if (= (length tags-searchable) 1)
-                           (car tags-searchable)
-                         (string-join tags-searchable ":"))))
-       'title headline-title
-       'url url 'annotation info))))
+                                 length))
+           (middle-line (make-string (or middle-line-length 0) ?―))
+           (icon (nerd-icons-icon-for-url url))
+           (tags-displaying (if (= (length tags-searchable) 1)
+                                (car tags-searchable)
+                              (string-join tags-searchable ":"))))
+      (propertize (format " %s %s %s [%s]" icon headline-title middle-line tags-displaying)
+                  'title headline-title 'url url 'annotation info))))
 
 (defun org-bookmarks--candidates (file)
   "Return a list of candidates from FILE."
