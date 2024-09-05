@@ -88,7 +88,7 @@
   :safe #'listp
   :group 'org-bookmarks)
 
-(defcustom org-bookmarks-browse-function #'browse-url
+(defcustom org-bookmarks-browse-url-function #'browse-url
   "Function called by `org-bookmarks' with selected URL as its sole argument."
   :type 'function
   :group 'org-bookmarks)
@@ -229,7 +229,7 @@ Or you can add org-capture template by yourself."
                        :exit-function #'org-bookmarks--completion-action))
                 (choice (completing-read "org-bookmarks: " candidates nil 'require-match))
                 (url (get-text-property 0 'url choice)))
-          (funcall org-bookmarks-browse-function url)
+          (funcall org-bookmarks-browse-url-function url)
         (user-error "No bookmarks found in %S" file))
     (user-error "File does not exist: %S" file)))
 
