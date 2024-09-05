@@ -141,7 +141,8 @@ Or you can add org-capture template by yourself."
                             "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
                             (org-bookmarks--entry-screenshot headline) "\n"))
-              (headline-title (org-element-property :raw-value headline)))
+              (headline-title (org-element-property :raw-value headline))
+              (position (point)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
            ;; TODO: The length counting method not correct on Chinese.
@@ -156,7 +157,8 @@ Or you can add org-capture template by yourself."
                                 (car tags-searchable)
                               (string-join tags-searchable ":"))))
       (propertize (format " %s %s %s [%s]" icon headline-title middle-line tags-displaying)
-                  'title headline-title 'url url 'annotation info))))
+                  'title headline-title 'url url 'annotation info
+                  'position position))))
 
 (defun org-bookmarks--candidates (file)
   "Return a list of candidates from FILE."
