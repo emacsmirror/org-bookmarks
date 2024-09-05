@@ -137,8 +137,8 @@ Or you can add org-capture template by yourself."
                             fill-column))
               ;; bookmark extra info as bookmark completion candidate annotation.
               (info (concat "\n" ; candidate display extra info in multi-line with "\n"
-                            (propertize url 'face 'link) "\n" ; property :URL:
-                            (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
+                            "   " (propertize url 'face 'link) "\n" ; property :URL:
+                            "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
                             (org-bookmarks--entry-screenshot headline) "\n"))
               (headline-title (org-element-property :raw-value headline)))
