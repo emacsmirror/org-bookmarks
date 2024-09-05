@@ -126,22 +126,22 @@ Or you can add org-capture template by yourself."
 
 ;;; TEST: (org-bookmarks--entry-screenshot (org-element-context))
 
-(defun org-bookmarks--candidate (headline)
-  "Return candidate string from Org HEADLINE."
-  (when-let* ((tags (org-element-property :tags headline))
+(defun org-bookmarks--candidate (headline-element)
+  "Return candidate string from Org HEADLINE-ELEMENT."
+  (when-let* ((tags (org-element-property :tags headline-element))
               ( (and (member org-bookmarks-tag tags)
                      (not (seq-intersection tags org-bookmarks-tag-exclude-list))))
-              (url (alist-get "URL" (org-entry-properties headline 'standard) nil nil #'equal))
+              (url (alist-get "URL" (org-entry-properties headline-element 'standard) nil nil #'equal))
               (description (string-fill
-                            (or (alist-get "DESCRIPTION" (org-entry-properties headline 'standard) nil nil #'equal) "")
+                            (or (alist-get "DESCRIPTION" (org-entry-properties headline-element 'standard) nil nil #'equal) "")
                             fill-column))
               ;; bookmark extra info as bookmark completion candidate annotation.
               (info (concat "\n" ; candidate display extra info in multi-line with "\n"
                             "   " (propertize url 'face 'link) "\n" ; property :URL:
                             "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
-                            (org-bookmarks--entry-screenshot headline) "\n"))
-              (headline-title (org-element-property :raw-value headline))
+                            (org-bookmarks--entry-screenshot headline-element) "\n"))
+              (headline-title (org-element-property :raw-value headline-element))
               (position (point)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
@@ -171,8 +171,8 @@ Or you can add org-capture template by yourself."
       (goto-char (point-min))
       (let ((candidates nil))
         (org-element-map (org-element-parse-buffer 'headline) 'headline
-          (lambda (headline)
-            (when-let ((candidate (org-bookmarks--candidate headline)))
+          (lambda (headline-element)
+            (when-let ((candidate (org-bookmarks--candidate headline-element)))
               (push candidate candidates))))
         (nreverse candidates)))))
 
