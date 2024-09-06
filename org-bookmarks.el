@@ -102,6 +102,12 @@ Or you can add org-capture template by yourself."
   :safe #'booleanp
   :group 'org-bookmarks)
 
+(defcustom org-bookmarks-db-auto-update-when-idle nil
+  "Non-nil means auto update org-bookmarks database when Emacs idle."
+  :type 'boolean
+  :safe #'booleanp
+  :group 'org-bookmarks)
+
 
 (defun org-bookmarks--entry-screenshot (headline)
   "Return the bookmark HEADLINE object's webpage screenshot inline image."
@@ -206,7 +212,8 @@ Or you can add org-capture template by yourself."
   :safe #'numberp
   :group 'org-bookmarks)
 
-(run-with-idle-timer org-bookmarks-db-update-idle-interval t 'org-bookmarks-db-update-cache)
+(when org-bookmarks-db-auto-update-when-idle
+  (run-with-idle-timer org-bookmarks-db-update-idle-interval t 'org-bookmarks-db-update-cache))
 
 ;;;###autoload
 (defun org-bookmarks (&optional file)
