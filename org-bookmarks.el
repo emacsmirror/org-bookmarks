@@ -108,6 +108,12 @@ Or you can add org-capture template by yourself."
   :safe #'booleanp
   :group 'org-bookmarks)
 
+(defcustom org-bookmarks-display-screenshot nil
+  "Whether display screenshot of bookmark in candidate."
+  :type 'boolean
+  :safe #'booleanp
+  :group 'org-bookmarks)
+
 
 (defun org-bookmarks--entry-screenshot (headline)
   "Return the bookmark HEADLINE object's webpage screenshot inline image."
@@ -146,7 +152,10 @@ Or you can add org-capture template by yourself."
                             "   " (propertize url 'face 'link) "\n" ; property :URL:
                             "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
-                            (org-bookmarks--entry-screenshot headline-element) "\n"))
+                            ;; TODO: the screenshot inline image is not displaying.
+                            (when org-bookmarks-display-screenshot
+                              (org-bookmarks--entry-screenshot headline-element))
+                            "\n"))
               (headline-title (org-element-property :raw-value headline-element))
               (position (point)))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
