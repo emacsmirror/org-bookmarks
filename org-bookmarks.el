@@ -115,6 +115,29 @@ Or you can add org-capture template by yourself."
   :group 'org-bookmarks)
 
 
+;;; Helper Functions
+
+(defun org-bookmarks--get-bookmark-content (bookmark-title)
+  "Get the buffer content of bookmark entry with title BOOKMARK-TITLE."
+  (if-let* ((file org-bookmarks-file)
+            (buffer (or (get-buffer (file-name-nondirectory file))
+                        (find-file-noselect file))))
+      (with-current-buffer buffer
+        (let ((marker (org-find-exact-headline-in-buffer bookmark-title buffer)))
+          ;; (org-goto-marker-or-bmk marker) ; NOTE: it will open buffer and jump.
+          (goto-char (marker-position marker)))
+        (when (or (org-invisible-p) (org-invisible-p2))
+          (org-fold-show-context))
+        ;; (org-element-context)
+        ;; reference from `org-get-entry'
+        (save-excursion
+          (org-back-to-heading t)
+          (buffer-substring (point) (org-end-of-subtree t))))))
+
+;;; TEST
+;; (org-bookmarks--get-bookmark-content "xHamster")
+;; (pp (org-bookmarks--get-bookmark-content "xHamster"))
+
 (defun org-bookmarks--entry-screenshot (headline)
   "Return the bookmark HEADLINE object's webpage screenshot inline image."
   ;; limit in current headline entry.
