@@ -198,14 +198,12 @@ Or you can add org-capture template by yourself."
                   'title headline-title 'url url 'annotation info
                   'position position))))
 
-(defun org-bookmarks--candidates (file)
-  "Return a list of candidates from FILE."
-  ;; It's better to use a temp buffer than touch the user's buffer.
-  ;; It also cleans up after itself.
-  (with-temp-buffer
-    (insert-file-contents file) ; don't need to actually open file.
-    (delay-mode-hooks ; This will prevent user hooks from running during parsing.
-      (org-mode)
+(defun org-bookmarks--candidates (&optional file)
+  "Return a list of candidates from FILE or default `org-bookmarks-file'."
+  (let* ((file org-bookmarks-file)
+         (buffer (or (get-buffer (file-name-nondirectory file))
+                     (find-file-noselect file))))
+    (with-current-buffer buffer
       (goto-char (point-min))
       (let ((candidates nil))
         (org-element-map (org-element-parse-buffer 'headline) 'headline
