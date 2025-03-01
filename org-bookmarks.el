@@ -161,7 +161,7 @@ Or you can add org-capture template by yourself."
 
 ;;; TEST: (org-bookmarks--entry-screenshot (org-element-context))
 
-(defun org-bookmarks--candidate (headline-element)
+(defun org-bookmarks--parse-element-as-candidate (headline-element)
   "Return candidate string from Org HEADLINE-ELEMENT."
   (when-let* ((tags (org-element-property :tags headline-element))
               ( (and (member org-bookmarks-tag tags)
@@ -208,7 +208,7 @@ Or you can add org-capture template by yourself."
       (let ((candidates nil))
         (org-element-map (org-element-parse-buffer 'headline) 'headline
           (lambda (headline-element)
-            (when-let ((candidate (org-bookmarks--candidate headline-element)))
+            (when-let ((candidate (org-bookmarks--parse-element-as-candidate headline-element)))
               (push candidate candidates))))
         (nreverse candidates)))))
 
