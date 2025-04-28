@@ -103,7 +103,7 @@ Or you can add org-capture template by yourself."
   :group 'org-bookmarks)
 
 (defcustom org-bookmarks-db-auto-update-when-idle nil
-  "Non-nil means auto update org-bookmarks database when Emacs idle."
+  "Non-nil means auto update `org-bookmarks' database when Emacs idle."
   :type 'boolean
   :safe #'booleanp
   :group 'org-bookmarks)
@@ -208,7 +208,7 @@ Or you can add org-capture template by yourself."
       (let ((candidates nil))
         (org-element-map (org-element-parse-buffer 'headline) 'headline
           (lambda (headline-element)
-            (when-let ((candidate (org-bookmarks--parse-element-as-candidate headline-element)))
+            (when-let* ((candidate (org-bookmarks--parse-element-as-candidate headline-element)))
               (push candidate candidates))))
         (nreverse candidates)))))
 
@@ -223,7 +223,7 @@ Or you can add org-capture template by yourself."
 
 (defun org-bookmarks--return-candidates (&optional file)
   "Return `org-bookmarks' candidates which parsed from FILE."
-  (if-let ((file (or file org-bookmarks-file)))
+  (if-let* ((file (or file org-bookmarks-file)))
       (org-bookmarks--candidates file)
     (user-error "File does not exist: %S" file)))
 
