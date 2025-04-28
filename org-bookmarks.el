@@ -200,7 +200,7 @@ Or you can add org-capture template by yourself."
 
 (defun org-bookmarks--candidates (&optional file)
   "Return a list of candidates from FILE or default `org-bookmarks-file'."
-  (let* ((file org-bookmarks-file)
+  (let* ((file (or file org-bookmarks-file))
          (buffer (or (get-buffer (file-name-nondirectory file))
                      (find-file-noselect file))))
     (with-current-buffer buffer
@@ -227,13 +227,20 @@ Or you can add org-capture template by yourself."
       (org-bookmarks--candidates file)
     (user-error "File does not exist: %S" file)))
 
-(defvar org-bookmarks--candidates-cache nil
-  "A cache variable of `org-bookmarks--candidates'.")
+(defvar org-bookmarks--candidates-cache-alist nil
+  "An cache alist variable of `org-bookmarks--candidates'.
+It consists with (file-name-base . candidates-data).
+The candidates-data is from function `org-bookmarks--return-candidates'.")
 
-(defun org-bookmarks-db-update-cache ()
-  "Update the `org-bookmarks' database cache."
-  (interactive)
-  (setq org-bookmarks--candidates-cache (org-bookmarks--return-candidates)))
+(defun org-bookmarks-db-update-cache (&optional file)
+  "Update the `org-bookmarks' database cache for FILE."
+  (interactive (list (expand-file-name
+                      (completing-read "[org-bookmarks] update db cache from file: "
+                                       (list org-bookmarks-file
+                                             (buffer-file-name (current-buffer)))))))
+  (let* ((file (or file org-bookmarks-file)))
+    (add-to-list 'org-bookmarks--candidates-cache-alist
+                 (cons file (org-bookmarks--return-candidates file)))))
 
 ;;; Auto update org-bookmarks database cache in Emacs idle timer.
 (defcustom org-bookmarks-db-update-idle-interval (* 60 10)
@@ -248,12 +255,15 @@ Or you can add org-capture template by yourself."
 ;;;###autoload
 (defun org-bookmarks (&optional file)
   "Open bookmark read from FILE or `org-bookmarks-file'."
-  (interactive)
-  (unless org-bookmarks--candidates-cache
-    (org-bookmarks-db-update-cache))
+  (interactive (list (expand-file-name
+                      (completing-read "[org-bookmarks] Select bookmarks from file: "
+                                       (list org-bookmarks-file
+                                             (buffer-file-name (current-buffer)))))))
+  (unless (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal)
+    (org-bookmarks-db-update-cache file))
   (if-let* ((file (or file org-bookmarks-file))
             ( (file-exists-p file)))
-      (if-let* ((candidates org-bookmarks--candidates-cache)
+      (if-let* ((candidates (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal))
                 (minibuffer-allow-text-properties t)
                 (completion-extra-properties
                  ;; Using the "bookmark" category caused the annotations to not show.
@@ -269,6 +279,11 @@ Or you can add org-capture template by yourself."
           (funcall org-bookmarks-browse-url-function url)
         (user-error "No bookmarks found in %S" file))
     (user-error "File does not exist: %S" file)))
+
+(defun org-bookmarks-in-current-buffer ()
+  "Open bookmark in current Org buffer."
+  (interactive)
+  (org-bookmarks (buffer-file-name (current-buffer))))
 
 ;;; TEST:
 ;; (org-bookmarks "bookmarks.org")
@@ -301,7 +316,7 @@ Or you can add org-capture template by yourself."
 
 (defun org-bookmarks-link-complete ()
   "Create a \"org-bookmark:\" type link using completion."
-  (if-let* ((candidates org-bookmarks--candidates-cache)
+  (if-let* ((candidates (alist-get org-bookmarks-file org-bookmarks--candidates-cache-alist nil nil 'equal))
             (minibuffer-allow-text-properties t)
             (completion-extra-properties
              (list :category 'org-bookmark
