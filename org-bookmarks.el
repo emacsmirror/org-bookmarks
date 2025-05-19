@@ -344,6 +344,7 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
            (bound-and-true-p org-bookmarks-add-org-capture-template))
       (setq org-capture-templates
             (delete (assoc "b" org-capture-templates) org-capture-templates)))
+  
   (add-to-list
    'org-capture-templates
    `("b" ,(format "%s\tAdd a new bookmark to %s"
@@ -358,8 +359,11 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
 :END:")
      :empty-lines 1
      :jump-to-captured t
-     :refile-targets ((,org-bookmarks-file :maxlevel 3)))
-   :append))
+     :refile-targets ((,org-bookmarks-file :maxlevel 3))))
+  ;; Org capture template only available in `org-bookmarks-file' "Bookmarks.org".
+  ;; (add-to-list 'org-capture-templates-contexts `("b" ((in-buffer . ,(file-name-nondirectory org-bookmarks-file)))))
+  )
+
 
 
 
