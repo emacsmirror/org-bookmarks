@@ -257,8 +257,9 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive (list (expand-file-name
                       (completing-read "[org-bookmarks] Select bookmarks from file: "
-                                       (list org-bookmarks-file
-                                             (buffer-file-name (current-buffer)))))))
+                                       (delq nil
+                                             (list org-bookmarks-file
+                                                   (buffer-file-name (current-buffer))))))))
   (unless (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal)
     (org-bookmarks-db-update-cache file))
   (if-let* ((file (or file org-bookmarks-file))
