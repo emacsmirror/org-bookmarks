@@ -355,7 +355,7 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
      entry (file ,(expand-file-name org-bookmarks-file))
      ,(concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "
 :PROPERTIES:
-:URL:  %^C
+:URL:  %^{URL}C
 :DATE: %t
 :END:")
      :empty-lines 1
