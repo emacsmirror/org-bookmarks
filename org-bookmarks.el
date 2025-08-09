@@ -138,11 +138,11 @@ Or you can add org-capture template by yourself."
 ;; (org-bookmarks--get-bookmark-content "xHamster")
 ;; (pp (org-bookmarks--get-bookmark-content "xHamster"))
 
-(defun org-bookmarks--entry-screenshot (headline)
+(defun org-bookmarks--entry-screenshot (headline-element)
   "Return the bookmark HEADLINE object's webpage screenshot inline image."
   ;; limit in current headline entry.
-  (let ((entry-begin (org-element-begin headline))
-        (entry-end (org-element-end headline)))
+  (let ((entry-begin (org-element-begin headline-element))
+        (entry-end (org-element-end headline-element)))
     ;; skip over to property end
     (goto-char entry-begin)
     (search-forward-regexp org-property-end-re nil t)
