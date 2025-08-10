@@ -183,7 +183,8 @@ Or you can add org-capture template by yourself."
                             "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
                             ;; FIXME: the screenshot inline image is not displaying.
-                            "   " screenshot "\n"
+                            (when org-bookmarks-display-screenshot
+                              "   " screenshot "\n")
                             "\n"))
               (headline-title (org-element-property :raw-value headline-element))
               (position (or (org-element-begin headline-element) (point))))
