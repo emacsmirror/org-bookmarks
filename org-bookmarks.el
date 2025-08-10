@@ -238,9 +238,20 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
                       (completing-read "[org-bookmarks] update db cache from file: "
                                        (list org-bookmarks-file
                                              (buffer-file-name (current-buffer)))))))
-  (let* ((file (or file org-bookmarks-file)))
+  (let* ((file (expand-file-name (or file org-bookmarks-file))))
     (add-to-list 'org-bookmarks--candidates-cache-alist
-                 (cons file (org-bookmarks--return-candidates file)))))
+                 (cons file (org-bookmarks--return-candidates file))))
+  (message "[org-bookmarks] database cache updated!"))
+
+(defun org-bookmarks-db-reset (&optional file)
+  "Reset the `org-bookmarks' database cache for FILE."
+  (interactive (list (expand-file-name
+                      (completing-read "[org-bookmarks] update db cache from file: "
+                                       (list org-bookmarks-file
+                                             (buffer-file-name (current-buffer)))))))
+  (let* ((file (expand-file-name (or file org-bookmarks-file))))
+    (setf (alist-get file org-bookmarks--candidates-cache-alist nil nil 'string-equal) nil)
+    (message "[org-bookmarks] database reset for file <%s> records" file)))
 
 ;;; Auto update org-bookmarks database cache in Emacs idle timer.
 (defcustom org-bookmarks-db-update-idle-interval (* 60 10)
