@@ -153,13 +153,18 @@ Or you can add org-capture template by yourself."
              (link-type (org-element-property :type link-element))
              (link-path (org-element-property :path link-element)))
         (when (buffer-narrowed-p) (widen))
-        (when (and link-path
-                   (string-equal link-type "file")
+        (when (and (string-equal link-type "file")
+                   link-path
                    (member (intern (file-name-extension link-path)) image-types))
           (propertize " "
-                      'display (create-image link-path nil nil :max-height (* (default-font-height) 20))))))))
+                      'display (create-image link-path nil nil
+                                             :ascent 100
+                                             ;; :height (* (default-font-height) 20)
+                                             ;; :width 50
+                                             )))))))
 
-;;; TEST: (org-bookmarks--entry-screenshot (org-element-context))
+;; TEST:
+;; (org-bookmarks--entry-screenshot (org-element-context))
 
 (defun org-bookmarks--parse-element-as-candidate (headline-element)
   "Return candidate string from Org HEADLINE-ELEMENT."
@@ -171,13 +176,14 @@ Or you can add org-capture template by yourself."
                             (or (alist-get "DESCRIPTION" (org-entry-properties headline-element 'standard) nil nil #'equal) "")
                             fill-column))
               ;; bookmark extra info as bookmark completion candidate annotation.
+              (screenshot (when org-bookmarks-display-screenshot
+                            (org-bookmarks--entry-screenshot headline-element)))
               (info (concat "\n" ; candidate display extra info in multi-line with "\n"
                             "   " (propertize url 'face 'link) "\n" ; property :URL:
                             "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
-                            ;; TODO: the screenshot inline image is not displaying.
-                            (when org-bookmarks-display-screenshot
-                              (org-bookmarks--entry-screenshot headline-element))
+                            ;; FIXME: the screenshot inline image is not displaying.
+                            "   " screenshot "\n"
                             "\n"))
               (headline-title (org-element-property :raw-value headline-element))
               (position (point)))
@@ -195,8 +201,14 @@ Or you can add org-capture template by yourself."
                                 (car tags-searchable)
                               (string-join tags-searchable ":"))))
       (propertize (format " %s %s %s [%s]" icon headline-title middle-line tags-displaying)
-                  'title headline-title 'url url 'annotation info
+                  'title headline-title
+                  'url url
+                  'annotation info
+                  ;; 'screenshot screenshot
                   'position position))))
+
+;; TEST:
+;; (org-bookmarks--parse-element-as-candidate (org-element-context))
 
 (defun org-bookmarks--candidates (&optional file)
   "Return a list of candidates from FILE or default `org-bookmarks-file'."
@@ -211,6 +223,9 @@ Or you can add org-capture template by yourself."
             (when-let* ((candidate (org-bookmarks--parse-element-as-candidate headline-element)))
               (push candidate candidates))))
         (nreverse candidates)))))
+
+;; TEST:
+;; (nth 80 (org-bookmarks--candidates org-bookmarks-file))
 
 (defun org-bookmarks--completion-annotator (candidate)
   "Annotate bookmark completion CANDIDATE."
@@ -231,6 +246,9 @@ Or you can add org-capture template by yourself."
   "An cache alist variable of `org-bookmarks--candidates'.
 It consists with (file-name-base . candidates-data).
 The candidates-data is from function `org-bookmarks--return-candidates'.")
+
+;; TEST:
+;; (nth 88 (cddar org-bookmarks--candidates-cache-alist))
 
 (defun org-bookmarks-db-update-cache (&optional file)
   "Update the `org-bookmarks' database cache for FILE."
