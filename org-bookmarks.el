@@ -186,7 +186,7 @@ Or you can add org-capture template by yourself."
                             "   " screenshot "\n"
                             "\n"))
               (headline-title (org-element-property :raw-value headline-element))
-              (position (point)))
+              (position (or (org-element-begin headline-element) (point))))
     ;; The URL and ANNOTATION properties will be used for candidate display and browsing.
     (let* ((tags-searchable (delete org-bookmarks-tag tags))
            ;; TODO: The length counting method not correct on Chinese.
