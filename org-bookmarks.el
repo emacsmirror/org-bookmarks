@@ -176,8 +176,7 @@ Or you can add org-capture template by yourself."
                             (or (alist-get "DESCRIPTION" (org-entry-properties headline-element 'standard) nil nil #'equal) "")
                             fill-column))
               ;; bookmark extra info as bookmark completion candidate annotation.
-              (screenshot (when org-bookmarks-display-screenshot
-                            (org-bookmarks--entry-screenshot headline-element)))
+              (screenshot (if org-bookmarks-display-screenshot (org-bookmarks--entry-screenshot headline-element) " "))
               (info (concat "\n" ; candidate display extra info in multi-line with "\n"
                             "   " (propertize url 'face 'link) "\n" ; property :URL:
                             "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
@@ -269,7 +268,7 @@ Reset the whole database cache variable when none file select."
                       (completing-read "[org-bookmarks] update db cache from file: "
                                        (list org-bookmarks-file
                                              (buffer-file-name (current-buffer)))))))
-  (if-let* ((file (expand-file-name (or file org-bookmarks-file))))
+  (if-let* ((file (expand-file-name file)))
       (progn
         (setf (alist-get file org-bookmarks--candidates-cache-alist nil nil 'string-equal) nil)
         (message "[org-bookmarks] database reset for file <%s> records" file))
