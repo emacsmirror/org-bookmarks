@@ -108,6 +108,12 @@ Or you can add org-capture template by yourself."
   :safe #'booleanp
   :group 'org-bookmarks)
 
+(defcustom org-bookmarks-display-url t
+  "Whether display URL of bookmark in candidate."
+  :type 'boolean
+  :safe #'booleanp
+  :group 'org-bookmarks)
+
 (defcustom org-bookmarks-display-screenshot nil
   "Whether display screenshot of bookmark in candidate."
   :type 'boolean
@@ -174,16 +180,19 @@ Or you can add org-capture template by yourself."
               (url (alist-get "URL" (org-entry-properties headline-element 'standard) nil nil #'equal))
               (description (string-fill
                             (or (alist-get "DESCRIPTION" (org-entry-properties headline-element 'standard) nil nil #'equal) "")
-                            fill-column))
+                            (or (- (window-width) 5) fill-column)))
               ;; bookmark extra info as bookmark completion candidate annotation.
-              (screenshot (if org-bookmarks-display-screenshot (org-bookmarks--entry-screenshot headline-element) " "))
+              (screenshot (when org-bookmarks-display-screenshot
+                            (org-bookmarks--entry-screenshot headline-element)))
               (info (concat "\n" ; candidate display extra info in multi-line with "\n"
-                            "   " (propertize url 'face 'link) "\n" ; property :URL:
-                            "   " (propertize description 'face 'font-lock-comment-face) "\n" ; property :DESCRIPTION:
+                            (when org-bookmarks-display-url
+                              (concat "   " (propertize url 'face 'link) "\n")) ; property :URL:
+                            (when (string-empty-p description)
+                              (concat "   " (propertize description 'face 'font-lock-comment-face) "\n")) ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
                             ;; FIXME: the screenshot inline image is not displaying.
-                            (when org-bookmarks-display-screenshot
-                              "   " screenshot "\n")
+                            (when (and org-bookmarks-display-screenshot screenshot)
+                              (concat "   " screenshot "\n"))
                             "\n"))
               (headline-title (org-element-property :raw-value headline-element))
               (position (or (org-element-begin headline-element) (point))))
