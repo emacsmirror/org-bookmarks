@@ -261,13 +261,14 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
 
 (defun org-bookmarks-db-update-cache (&optional file)
   "Update the `org-bookmarks' database cache for FILE."
-  (interactive (list (expand-file-name
-                      (completing-read "[org-bookmarks] update db cache from file: "
-                                       (list org-bookmarks-file
-                                             (buffer-file-name (current-buffer)))))))
-  (let* ((file (expand-file-name (or file org-bookmarks-file))))
+  (interactive (list (completing-read "[org-bookmarks] update db cache from file: "
+                                      (delq nil
+                                            (list org-bookmarks-file
+                                                  (when (derived-mode-p 'org-mode)
+                                                    (buffer-file-name (current-buffer))))))))
+  (let* ((file-absolute (expand-file-name file)))
     (add-to-list 'org-bookmarks--candidates-cache-alist
-                 (cons file (org-bookmarks--return-candidates file))))
+                 (cons file-absolute (org-bookmarks--return-candidates file-absolute))))
   (message "[org-bookmarks] database cache updated!"))
 
 (defun org-bookmarks-db-reset (&optional file)
