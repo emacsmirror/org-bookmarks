@@ -178,16 +178,16 @@ Or you can add org-capture template by yourself."
               ( (and (member org-bookmarks-tag tags)
                      (not (seq-intersection tags org-bookmarks-tag-exclude-list))))
               (url (alist-get "URL" (org-entry-properties headline-element 'standard) nil nil #'equal))
-              (description (string-fill
-                            (or (alist-get "DESCRIPTION" (org-entry-properties headline-element 'standard) nil nil #'equal) "")
-                            (or (- (window-width) 5) fill-column)))
+              (description (let* ((property-description (alist-get "DESCRIPTION" (org-entry-properties headline-element 'standard) "" nil #'equal)))
+                             (string-fill property-description (or (- (window-width) 5) fill-column))))
               ;; bookmark extra info as bookmark completion candidate annotation.
-              (screenshot (when org-bookmarks-display-screenshot
-                            (org-bookmarks--entry-screenshot headline-element)))
+              (screenshot (if org-bookmarks-display-screenshot
+                              (org-bookmarks--entry-screenshot headline-element)
+                            ""))
               (info (concat "\n" ; candidate display extra info in multi-line with "\n"
                             (when org-bookmarks-display-url
                               (concat "   " (propertize url 'face 'link) "\n")) ; property :URL:
-                            (when (string-empty-p description)
+                            (unless (string-empty-p description)
                               (concat "   " (propertize description 'face 'font-lock-comment-face) "\n")) ; property :DESCRIPTION:
                             ;; The screenshot inline image in bookmark entry body.
                             ;; FIXME: the screenshot inline image is not displaying.
