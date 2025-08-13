@@ -259,7 +259,7 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
 ;; TEST:
 ;; (nth 88 (cddar org-bookmarks--candidates-cache-alist))
 
-(defun org-bookmarks-db-update-cache (&optional file)
+(defun org-bookmarks-db-cache-update (&optional file)
   "Update the `org-bookmarks' database cache for FILE."
   (interactive (list (completing-read "[org-bookmarks] update db cache from file: "
                                       (delq nil
@@ -271,7 +271,7 @@ The candidates-data is from function `org-bookmarks--return-candidates'.")
                  (cons file-absolute (org-bookmarks--return-candidates file-absolute))))
   (message "[org-bookmarks] database cache updated!"))
 
-(defun org-bookmarks-db-reset (&optional file)
+(defun org-bookmarks-db-cache-reset (&optional file)
   "Reset the `org-bookmarks' database cache for selected FILE.
 Reset the whole database cache variable when none file select."
   (interactive (list (completing-read "[org-bookmarks] update db cache from file: "
@@ -290,7 +290,7 @@ Reset the whole database cache variable when none file select."
   :group 'org-bookmarks)
 
 (when org-bookmarks-db-auto-update-when-idle
-  (run-with-idle-timer org-bookmarks-db-update-idle-interval t 'org-bookmarks-db-update-cache))
+  (run-with-idle-timer org-bookmarks-db-update-idle-interval t 'org-bookmarks-db-cache-update))
 
 ;;;###autoload
 (defun org-bookmarks (&optional file)
@@ -301,7 +301,7 @@ Reset the whole database cache variable when none file select."
                                              (list org-bookmarks-file
                                                    (buffer-file-name (current-buffer))))))))
   (unless (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal)
-    (org-bookmarks-db-update-cache file))
+    (org-bookmarks-db-cache-update file))
   (if-let* ((file (or file org-bookmarks-file))
             ( (file-exists-p file)))
       (if-let* ((candidates (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal))
