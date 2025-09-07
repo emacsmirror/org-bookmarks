@@ -375,8 +375,9 @@ Reset the whole database cache variable when none file select."
                          :store #'org-bookmarks-link-store
                          :complete #'org-bookmarks-link-complete)
 
-;;;###autoload
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'.
+
+;;;###autoload
 (defun org-bookmarks-add-org-capture-template ()
   "Add `org-capture' template for adding new bookmark to `org-bookmarks-file'."
   (require 'org-capture)
@@ -403,8 +404,7 @@ Reset the whole database cache variable when none file select."
      :jump-to-captured t
      :refile-targets ((,org-bookmarks-file :maxlevel 3))))
   ;; Org capture template only available in `org-bookmarks-file' "Bookmarks.org".
-  ;; (add-to-list 'org-capture-templates-contexts `("b" ((in-buffer . ,(file-name-nondirectory org-bookmarks-file)))))
-  )
+  (add-to-list 'org-capture-templates-contexts `("b" ((in-buffer . ,(file-name-nondirectory org-bookmarks-file))))))
 
 
 
