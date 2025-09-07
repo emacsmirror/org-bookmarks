@@ -34,7 +34,7 @@
 ;;   :custom ((org-bookmarks-file "~/Org/Bookmarks/Bookmarks.org")
 ;;            (org-bookmarks-add-org-capture-template t))
 ;;   :commands (org-bookmarks)
-;;   :init (org-bookmarks-add-org-capture-template))
+;;   :hook (emacs-startup . org-bookmarks-add-to-org-capture-templates))
 
 ;; 1. Record bookmark information into Org mode file.
 ;;
@@ -378,12 +378,12 @@ Reset the whole database cache variable when none file select."
 ;;; Add `org-capture' template for adding new bookmark to `org-bookmarks-file'.
 
 ;;;###autoload
-(defun org-bookmarks-add-org-capture-template ()
+(defun org-bookmarks-add-to-org-capture-templates ()
   "Add `org-capture' template for adding new bookmark to `org-bookmarks-file'."
   (require 'org-capture)
   ;; Delete existing key "b" binding in `org-capture-templates'.
-  (when (and (assoc "b" org-capture-templates)
-             (bound-and-true-p org-bookmarks-add-org-capture-template))
+  (when (and (bound-and-true-p org-bookmarks-add-org-capture-template)
+             (assoc "b" org-capture-templates))
     (setq org-capture-templates
           (delete (assoc "b" org-capture-templates) org-capture-templates)))
   
