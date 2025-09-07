@@ -381,10 +381,10 @@ Reset the whole database cache variable when none file select."
   "Add `org-capture' template for adding new bookmark to `org-bookmarks-file'."
   (require 'org-capture)
   ;; Delete existing key "b" binding in `org-capture-templates'.
-  (if (and (assoc "b" org-capture-templates)
-           (bound-and-true-p org-bookmarks-add-org-capture-template))
-      (setq org-capture-templates
-            (delete (assoc "b" org-capture-templates) org-capture-templates)))
+  (when (and (assoc "b" org-capture-templates)
+             (bound-and-true-p org-bookmarks-add-org-capture-template))
+    (setq org-capture-templates
+          (delete (assoc "b" org-capture-templates) org-capture-templates)))
   
   (add-to-list
    'org-capture-templates
