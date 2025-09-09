@@ -385,7 +385,7 @@ Reset the whole database cache variable when none file select."
   (when (and (bound-and-true-p org-bookmarks-add-org-capture-template)
              (assoc "b" org-capture-templates))
     (setq org-capture-templates
-          (delete (assoc "b" org-capture-templates) org-capture-templates)))
+          (remove (assoc "b" org-capture-templates) org-capture-templates)))
   
   (add-to-list
    'org-capture-templates
