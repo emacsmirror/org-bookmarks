@@ -84,7 +84,7 @@
 
 (defcustom org-bookmarks-tag-exclude-list `(,org-archive-tag "deprecated")
   "The list of Org tags to exclude in searching bookmarks list."
-  :type 'list
+  :type '(repeat string)
   :safe #'listp
   :group 'org-bookmarks)
 
