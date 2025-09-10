@@ -404,8 +404,9 @@ Reset the whole database cache variable when none file select."
      :jump-to-captured t
      :refile-targets ((,org-bookmarks-file :maxlevel 3)))
    :append)
-  ;; Org capture template only available in `org-bookmarks-file' "Bookmarks.org".
-  (add-to-list 'org-capture-templates-contexts `("b" ((in-buffer . ,(file-name-nondirectory org-bookmarks-file))))))
+  ;; Org capture template limit only available in `org-bookmarks-file' "Bookmarks.org".
+  ;; (add-to-list 'org-capture-templates-contexts `("b" ((in-buffer . ,(file-name-nondirectory org-bookmarks-file)))))
+  )
 
 
 
