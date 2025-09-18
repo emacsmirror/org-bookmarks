@@ -394,12 +394,14 @@ Reset the whole database cache variable when none file select."
                     (nerd-icons-mdicon "nf-md-bookmark_plus_outline" :face 'nerd-icons-blue))
                   (file-name-nondirectory org-bookmarks-file))
      entry (file ,(expand-file-name org-bookmarks-file))
-     ,(concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "%^g" "
-:PROPERTIES:
-:URL:  %c
-:DATE: %t
-:DESCRIPTION: %^{DESCRIPTION}p
-:END:")
+     ,(string-join
+       (list (concat "* %^{bookmark title}\t\t\t\t" (format ":%s:" org-bookmarks-tag) "%^g")
+             ":PROPERTIES:"
+             ":URL:  %c"
+             ":DATE: %t"
+             ":DESCRIPTION: %^{DESCRIPTION}p"
+             ":END:")
+       "\n")
      :empty-lines 1
      :jump-to-captured t
      :refile-targets ((,org-bookmarks-file :maxlevel 3)))
