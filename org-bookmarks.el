@@ -4,7 +4,7 @@
 ;; Copyright (C) 2024-2025 stardiviner <numbchild@gmail.com>
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "29.1") (nerd-icons "0.1.0"))
+;; Package-Requires: ((emacs "29.1") (nerd-icons "0.1.0") (seq "2.24"))
 ;; Version: 1.3
 ;; Keywords: outline matching hypermedia org
 ;; URL: https://repo.or.cz/org-bookmarks.git
@@ -56,6 +56,7 @@
 (require 'org) ; for `org-tags-column'
 (require 'org-element)
 (require 'nerd-icons)
+(require 'seq)
 
 (eval-when-compile (require 'org-capture))
 (eval-when-compile (require 'nerd-icons nil t))
@@ -297,9 +298,10 @@ Reset the whole database cache variable when none file select."
   "Open bookmark read from FILE or `org-bookmarks-file'."
   (interactive (list (expand-file-name
                       (completing-read "[org-bookmarks] Select bookmarks from file: "
-                                       (delq nil
-                                             (list org-bookmarks-file
-                                                   (buffer-file-name (current-buffer))))))))
+                                       (seq-filter
+                                        (lambda (file) (string-suffix-p ".org" file))
+                                        (list org-bookmarks-file
+                                              (buffer-file-name (current-buffer))))))))
   (unless (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal)
     (org-bookmarks-db-cache-update file))
   (if-let* ((file (or file org-bookmarks-file))
