@@ -300,8 +300,9 @@ Reset the whole database cache variable when none file select."
                       (completing-read "[org-bookmarks] Select bookmarks from file: "
                                        (seq-filter
                                         (lambda (file) (string-suffix-p ".org" file))
-                                        (list org-bookmarks-file
-                                              (buffer-file-name (current-buffer))))))))
+                                        (append (list org-bookmarks-file
+                                                      (buffer-file-name (current-buffer)))
+                                                (org-files-list)))))))
   (unless (alist-get file org-bookmarks--candidates-cache-alist nil nil 'equal)
     (org-bookmarks-db-cache-update file))
   (if-let* ((file (or file org-bookmarks-file))
